@@ -7,14 +7,18 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-//event Handler
+//event Handler for differnt routes
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
+app.get("/hello", (req, res) => {
+  res.send("<html><body>Hello <b>CHRISSSSS</b></body></html>\n");
+});
 
+//start the server to listen to requests
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
