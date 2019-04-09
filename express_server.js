@@ -14,11 +14,22 @@ var urlDatabase = {
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
+
 app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>CHRISSSSS</b></body></html>\n");
+  //access in variable in .ejs file by KEY name!!!
+  let templateVars = { greeting: 'Hello World! This is my Lil App!' };
+  res.render("hello_world", templateVars);
+});
+
+app.get("/urls", (req, res) => {
+  let templateVars = { urls: urlDatabase };
+  //render template from views/urls_index.ejs
+
+  res.render("urls_index", templateVars);
 });
 
 //start the server to listen to requests
