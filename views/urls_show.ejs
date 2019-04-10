@@ -16,12 +16,19 @@
 
 <body style="font-size:20px; padding:50px;">
     <!-- Add EJS code here -->
-    <h2>Short URLs and Long URLs</h2>
+    <h2>Show Single URL</h2>
+
 
       <ul>
-
           <% if (shortURL === longURL[shortURL])  %>
-              <li> <a href="something"> <%= shortURL %> </a> is for website: <%= longURL[shortURL] %> </li>
+              <li> <a href="#"> <%= shortURL %> </a> is for website: <%= longURL[shortURL] %> </li>
+              <li>
+                <form class="form-inline" action="/urls/<%= shortURL %>/update" method="POST">
+                  <label for="longURL">Enter NEW URL:</label>
+                  <input class="form-control" type="text" name="longURL" placeholder="http://" style="width: 300px; margin: 1em">
+                  <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+              </li>
 
       </ul>
 </body>

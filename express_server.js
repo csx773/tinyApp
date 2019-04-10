@@ -48,7 +48,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-//display single url (OLD)
+//display single url
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL,
                         longURL: urlDatabase };
@@ -86,6 +86,8 @@ app.post('/urls/:shortURL/delete', (req, res) =>{
   console.log(urlDatabase);
   res.redirect('/urls');
 })
+
+
 
 //start the server to listen to requests
 app.listen(PORT, () => {
