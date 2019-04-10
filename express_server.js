@@ -14,9 +14,11 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-//genreate unique URL
+//genreate unique URL, returns a sting of 6 characters
 function generateRandomString() {
-
+  let name = Math.random().toString(36).slice(2,8);
+  //console.log(name);
+  return name;
 }
 
 //event Handler for differnt routes
@@ -49,11 +51,26 @@ app.get("/urls/:shortURL", (req, res) => {
                         longURL: urlDatabase };
   res.render("urls_show", templateVars);
 });
+//GET handler for after new shortURL created
+app.get("/u/:shortURL", (req, res) => {
+  // const longURL = ...
+  //console.log(req.body);
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL];
+  //console.log(`shortURL is ${shortURL}`);
+  //console.log(`longURL is ${longURL}`);
+  res.redirect(longURL);
+});
 
 //event Handler for POST from browser
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok for now, longURL recieved");         // Respond with 'Ok' (we will replace this)
+  //console.log(req.body);  // Log the POST request body to the console
+  let shortURL = generateRandomString();  //replaced later generateRandomString()
+  let longURL = req.body.longURL;
+  urlDatabase[shortURL] = longURL;
+  console.log('urlDatabase is now: ', urlDatabase);
+  //res.send("Ok for now, website address recieved");         // Respond with 'Ok' (we will replace this)
+  res.redirect(`/u/${shortURL}`);
 });
 
 //start the server to listen to requests
