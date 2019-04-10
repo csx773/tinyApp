@@ -27,9 +27,14 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
-  //render template from views/urls_index.ejs
-
+  //in .ejs file, onject key name will be: urls
   res.render("urls_index", templateVars);
+});
+
+app.get("/urls/:shortURL", (req, res) => {
+  let templateVars = { shortURL: req.params.shortURL,
+                        longURL: urlDatabase };
+  res.render("urls_show", templateVars);
 });
 
 //start the server to listen to requests
