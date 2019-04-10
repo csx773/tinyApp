@@ -6,8 +6,14 @@ var PORT = 8080;
 //init the body-parser module
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
+
 //init EJS module
 app.set("view engine", "ejs");
+
+//init morgan module and Tell the app to use morgan to log HTTP requests
+const morgan = require('morgan')
+app.use(morgan('dev'))
+
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
