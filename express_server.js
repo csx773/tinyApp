@@ -23,7 +23,7 @@ function generateRandomString() {
 
 //event Handler for differnt routes
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.send("Hello there General Kenobi!");
 });
 
 app.get("/urls.json", (req, res) => {
