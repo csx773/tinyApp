@@ -17,6 +17,10 @@
 <body style="font-size:20px; padding:50px;">
     <!-- Add EJS code here -->
     <h2>Short URLs</h2>
+        <form class="form-inline" method="GET" action='/urls/new'>
+          <a> Click to add new link </a>
+          <button type="submit" class="btn btn-primary"> Add Link </button>
+        </form>
 
       <ul>
           <% for ( let elm in urls) {%>

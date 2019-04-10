@@ -14,7 +14,7 @@ app.set("view engine", "ejs");
 const morgan = require('morgan')
 app.use(morgan('dev'))
 
-//init cookies module in express
+//init cookie module in express
 var cookieParser = require('cookie-parser')
 app.use(cookieParser())
 
@@ -61,7 +61,8 @@ app.get("/urls", (req, res) => {
 
 //handdle GET for new tiny URL, create new URL
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = { username: req.cookies["username"] };
+  res.render("urls_new", templateVars);
 });
 
 //display single url
