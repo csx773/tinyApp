@@ -110,11 +110,18 @@ app.post('/urls/:id/update', (req, res) => {
   res.redirect('/urls');
 });
 
-// username registration
-app.post('/login', (req, res) =>{
+// username registration (LOGIN)
+app.post('/login', (req, res) => {
   console.log('inside POST login route');
   let newName = req.body.username;
   res.cookie('username', newName);
+  res.redirect('/urls');
+})
+
+// username Logout
+app.post('/logout', (req, res) => {
+  console.log('inside POST logout route');
+  res.clearCookie('username');
   res.redirect('/urls');
 })
 
