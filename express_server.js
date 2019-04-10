@@ -14,6 +14,10 @@ app.set("view engine", "ejs");
 const morgan = require('morgan')
 app.use(morgan('dev'))
 
+//init cookies module in express
+var cookieParser = require('cookie-parser')
+app.use(cookieParser())
+
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
