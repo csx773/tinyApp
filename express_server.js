@@ -75,5 +75,5 @@ app.post("/urls", (req, res) => {
 
 //start the server to listen to requests
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`TinyURL App listening on port ${PORT}!`);
 });
