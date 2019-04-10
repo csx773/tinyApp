@@ -104,8 +104,15 @@ app.post('/urls/:id/update', (req, res) => {
   let longURL = req.body.longURL;
   urlDatabase[id] = longURL;
   res.redirect('/urls');
-
 });
+
+// username registration
+app.post('/login', (req, res) =>{
+  console.log('inside POST login route');
+  let newName = req.body.username;
+  res.cookie('username', newName);
+  res.redirect('/urls');
+})
 
 //start the server to listen to requests
 app.listen(PORT, () => {
