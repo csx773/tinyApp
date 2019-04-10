@@ -78,16 +78,24 @@ app.post("/urls", (req, res) => {
 });
 
 // delete method
-app.post('/urls/:shortURL/delete', (req, res) =>{
+app.post('/urls/:shortURL/delete', (req, res) => {
   console.log("inside POST delete route");
   let shortURL = req.params.shortURL;
   //console.log(`shortURL is: ${shortURL}`);
   delete urlDatabase[shortURL];
   console.log(urlDatabase);
   res.redirect('/urls');
-})
+});
 
+//update method
+app.post('/urls/:id/update', (req, res) => {
+  console.log('inside POST update route');
+  let id = req.params.id;
+  let longURL = req.body.longURL;
+  urlDatabase[id] = longURL;
+  res.redirect('/urls');
 
+});
 
 //start the server to listen to requests
 app.listen(PORT, () => {
