@@ -34,7 +34,8 @@ function generateRandomString() {
 //event Handler for differnt routes
 //homepage /
 app.get("/", (req, res) => {
-  res.send("Hello there General Kenobi!");
+  //res.send("Hello there General Kenobi!");
+  res.redirect('/urls');
 });
 //display database JSON
 app.get("/urls.json", (req, res) => {
@@ -43,12 +44,17 @@ app.get("/urls.json", (req, res) => {
 //for testing
 app.get("/hello", (req, res) => {
   //access in variable in .ejs file by KEY name!!!
-  let templateVars = { greeting: 'Hello World! This is my Lil App!' };
+  let templateVars = {
+                        greeting: 'Hello World! This is my Lil App!',
+                        username: req.cookies["username"]
+                     };
   res.render("hello_world", templateVars);
 });
 // displays all urls
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = {  urls: urlDatabase,
+                        username: req.cookies["username"]
+                     };
   //in .ejs file, onject key name will be: urls
   res.render("urls_index", templateVars);
 });
@@ -61,18 +67,16 @@ app.get("/urls/new", (req, res) => {
 //display single url
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL,
-                        longURL: urlDatabase };
+                        longURL: urlDatabase,
+                        username: req.cookies["username"]
+                      };
   res.render("urls_show", templateVars);
 });
 
-//GET handler for after new shortURL created, redirects to acutal LongURL page
+//GET handler for after new shortURL created, redirects to acutal longURL page
 app.get("/u/:shortURL", (req, res) => {
-  // const longURL = ...
-  //console.log(req.body);
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
-  //console.log(`shortURL is ${shortURL}`);
-  //console.log(`longURL is ${longURL}`);
   res.redirect(longURL);
 });
 
