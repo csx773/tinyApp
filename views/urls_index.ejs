@@ -20,7 +20,10 @@
 
       <ul>
           <% for ( let elm in urls) {%>
-              <li> <a href="something"> <%= elm %> </a> is for website: <%= urls[elm] %> </li>
+              <form method="POST" action='/urls/<%= elm %>/delete'>
+                <li> <a href="something"> <%= elm %> </a> is for website: <%= urls[elm] %> </li>
+                <button type='submit'> Delete </button>
+              </form>
           <% }; %>
       </ul>
 </body>

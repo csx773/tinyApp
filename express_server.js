@@ -22,36 +22,40 @@ function generateRandomString() {
 }
 
 //event Handler for differnt routes
+//homepage /
 app.get("/", (req, res) => {
   res.send("Hello there General Kenobi!");
 });
-
+//display database JSON
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
-
+//for testing
 app.get("/hello", (req, res) => {
   //access in variable in .ejs file by KEY name!!!
   let templateVars = { greeting: 'Hello World! This is my Lil App!' };
   res.render("hello_world", templateVars);
 });
-
+// displays all urls
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
   //in .ejs file, onject key name will be: urls
   res.render("urls_index", templateVars);
 });
-//handdle GET for new tiny URL
+
+//handdle GET for new tiny URL, create new URL
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+//display single url (OLD)
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL,
                         longURL: urlDatabase };
   res.render("urls_show", templateVars);
 });
-//GET handler for after new shortURL created
+
+//GET handler for after new shortURL created, redirects to acutal LongURL page
 app.get("/u/:shortURL", (req, res) => {
   // const longURL = ...
   //console.log(req.body);
@@ -70,8 +74,18 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL] = longURL;
   console.log('urlDatabase is now: ', urlDatabase);
   //res.send("Ok for now, website address recieved");         // Respond with 'Ok' (we will replace this)
-  res.redirect(`/u/${shortURL}`);
+  res.redirect('/urls');
 });
+
+// delete method
+app.post('/urls/:shortURL/delete', (req, res) =>{
+  console.log("inside POST delete route");
+  let shortURL = req.params.shortURL;
+  //console.log(`shortURL is: ${shortURL}`);
+  delete urlDatabase[shortURL];
+  console.log(urlDatabase);
+  res.redirect('/urls');
+})
 
 //start the server to listen to requests
 app.listen(PORT, () => {
