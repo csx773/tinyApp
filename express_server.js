@@ -222,10 +222,12 @@ app.post("/register", (req, res) => {
   //if email and password are empty
   if (!(newUser.email && newUser.password)){
     console.log('email and password are empty!!');
+    res.send("Email and password cannot be empty");
     res.status(400).end();
   }else if( doesEmailExist(newUser.email) === true){
     //email exist alerady
     console.log('email exist already!')
+    res.send('Email exist already, please choose another email');
     res.status(400).end();
   }else {
     // start new user registration
