@@ -18,11 +18,24 @@ app.use(morgan('dev'))
 var cookieParser = require('cookie-parser')
 app.use(cookieParser())
 
-
+// Database for app
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
 
 //genreate unique URL, returns a sting of 6 characters
 function generateRandomString() {
@@ -31,8 +44,18 @@ function generateRandomString() {
   return name;
 }
 
-//event Handler for differnt routes
-//homepage /
+//loops through users and check if email already exist. Returns true or false
+function doesEmailExist(email){
+  for ( var elm in users){
+    if ( users[elm].email === email){ return true;}
+  }
+  //email do NOT exist
+  return false;
+}
+
+//event Handler for differnt routes *****************************
+
+//homepage
 app.get("/", (req, res) => {
   //res.send("Hello there General Kenobi!");
   res.redirect('/urls');
@@ -50,12 +73,19 @@ app.get("/hello", (req, res) => {
                      };
   res.render("hello_world", templateVars);
 });
+
+//new User registration page
+app.get("/register", (req, res) => {
+  console.log('inside register page')
+  let templateVars = { username: req.cookies["username"] };
+  res.render("new-registration", templateVars);
+});
+
 // displays all urls
 app.get("/urls", (req, res) => {
   let templateVars = {  urls: urlDatabase,
                         username: req.cookies["username"]
                      };
-  //in .ejs file, onject key name will be: urls
   res.render("urls_index", templateVars);
 });
 
@@ -81,14 +111,14 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+// event Handler for all POST methods ***********************************
+
 //event Handler for POST from browser
 app.post("/urls", (req, res) => {
-  //console.log(req.body);  // Log the POST request body to the console
-  let shortURL = generateRandomString();  //replaced later generateRandomString()
+  let shortURL = generateRandomString();
   let longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
   console.log('urlDatabase is now: ', urlDatabase);
-  //res.send("Ok for now, website address recieved");         // Respond with 'Ok' (we will replace this)
   res.redirect('/urls');
 });
 
@@ -111,7 +141,7 @@ app.post('/urls/:id/update', (req, res) => {
   res.redirect('/urls');
 });
 
-// username registration (LOGIN)
+// username (simple login)
 app.post('/login', (req, res) => {
   console.log('inside POST login route');
   let newName = req.body.username;
@@ -126,7 +156,33 @@ app.post('/logout', (req, res) => {
   res.redirect('/urls');
 })
 
-//start the server to listen to requests
+// new user registation
+app.post("/register", (req, res) => {
+  let randomID = generateRandomString();
+  let newUser = {
+                  id: randomID,
+                  email: req.body.email,
+                  password: req.body.password
+  }
+  //if email and password are empty
+  if (!(newUser.email && newUser.password)){
+    console.log('email and password are empty!!');
+    res.status(400).end();
+  }else if( doesEmailExist(newUser.email) === true){
+    //email exist alerady
+    console.log('email exist already!')
+    res.status(400).end();
+  }else {
+    // start new user registration
+    users[randomID] = newUser;
+    res.cookie('user_id', randomID);
+    console.log('users Database is now: ', users);
+    res.redirect('/urls');
+  }
+
+});
+
+//start the server to listen to requests ******************************8
 app.listen(PORT, () => {
   console.log(`TinyURL App listening on port ${PORT}!`);
 });
