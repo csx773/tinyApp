@@ -69,7 +69,9 @@ app.get("/hello", (req, res) => {
   //access in variable in .ejs file by KEY name!!!
   let templateVars = {
                         greeting: 'Hello World! This is my Lil App!',
-                        username: req.cookies["username"]
+                        username: req.cookies["username"],
+                        user_id:  req.cookies["user_id"],
+                        user: users[req.cookies["user_id"]]
                      };
   res.render("hello_world", templateVars);
 });
@@ -77,21 +79,32 @@ app.get("/hello", (req, res) => {
 //new User registration page
 app.get("/register", (req, res) => {
   console.log('inside register page')
-  let templateVars = { username: req.cookies["username"] };
+  let templateVars = {
+                      username: req.cookies["username"],
+                      user_id:  req.cookies["user_id"],
+                      user: users[req.cookies["user_id"]]
+   };
   res.render("new-registration", templateVars);
 });
 
 // displays all urls
 app.get("/urls", (req, res) => {
   let templateVars = {  urls: urlDatabase,
-                        username: req.cookies["username"]
+                        username: req.cookies["username"],
+                        user_id:  req.cookies["user_id"],
+                        user: users[req.cookies["user_id"]]
                      };
+  console.log(templateVars);
   res.render("urls_index", templateVars);
 });
 
 //handdle GET for new tiny URL, create new URL
 app.get("/urls/new", (req, res) => {
-  let templateVars = { username: req.cookies["username"] };
+  let templateVars = {
+                      username: req.cookies["username"],
+                      user_id:  req.cookies["user_id"],
+                      user: users[req.cookies["user_id"]]
+   };
   res.render("urls_new", templateVars);
 });
 
@@ -99,7 +112,9 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL,
                         longURL: urlDatabase,
-                        username: req.cookies["username"]
+                        username: req.cookies["username"],
+                        user_id:  req.cookies["user_id"],
+                        user: users[req.cookies["user_id"]]
                       };
   res.render("urls_show", templateVars);
 });
@@ -122,7 +137,7 @@ app.post("/urls", (req, res) => {
   res.redirect('/urls');
 });
 
-// delete method
+// delete URL method
 app.post('/urls/:shortURL/delete', (req, res) => {
   console.log("inside POST delete route");
   let shortURL = req.params.shortURL;
@@ -132,7 +147,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   res.redirect('/urls');
 });
 
-//update method
+//update URL method
 app.post('/urls/:id/update', (req, res) => {
   console.log('inside POST update route');
   let id = req.params.id;
@@ -153,6 +168,7 @@ app.post('/login', (req, res) => {
 app.post('/logout', (req, res) => {
   console.log('inside POST logout route');
   res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
 })
 
