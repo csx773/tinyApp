@@ -82,7 +82,6 @@ app.get("/hello", (req, res) => {
   //access in variable in .ejs file by KEY name!!!
   let templateVars = {
                         greeting: 'Hello World! This is my Lil App!',
-                        username: req.cookies["username"],
                         user_id:  req.cookies["user_id"],
                         user: users[req.cookies["user_id"]]
                      };
@@ -93,7 +92,6 @@ app.get("/hello", (req, res) => {
 app.get("/register", (req, res) => {
   console.log('inside register page')
   let templateVars = {
-                      username: req.cookies["username"],
                       user_id:  req.cookies["user_id"],
                       user: users[req.cookies["user_id"]]
    };
@@ -104,7 +102,6 @@ app.get("/register", (req, res) => {
 app.get("/login", (req, res) => {
   console.log('inside login page')
   let templateVars = {
-                      username: req.cookies["username"],
                       user_id:  req.cookies["user_id"],
                       user: users[req.cookies["user_id"]]
    };
@@ -115,7 +112,6 @@ app.get("/login", (req, res) => {
 // displays all urls
 app.get("/urls", (req, res) => {
   let templateVars = {  urls: urlDatabase,
-                        username: req.cookies["username"],
                         user_id:  req.cookies["user_id"],
                         user: users[req.cookies["user_id"]]
                      };
@@ -126,7 +122,6 @@ app.get("/urls", (req, res) => {
 //handdle GET for new tiny URL, create new URL
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-                      username: req.cookies["username"],
                       user_id:  req.cookies["user_id"],
                       user: users[req.cookies["user_id"]]
    };
@@ -137,7 +132,6 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL,
                         longURL: urlDatabase,
-                        username: req.cookies["username"],
                         user_id:  req.cookies["user_id"],
                         user: users[req.cookies["user_id"]]
                       };
@@ -182,9 +176,6 @@ app.post('/urls/:id/update', (req, res) => {
 });
 
 // (Default) Login page
-
-
-
 app.post('/login', (req, res) => {
   console.log('inside POST login route');
   // let tempID = req.cookies['user_id'];
@@ -195,20 +186,29 @@ app.post('/login', (req, res) => {
   var user = authenticateUser(email, password);
   if(user){
     // res.send("Username and password matched");
-    res.cookie('user_id', user.id );  // user_id
+    res.cookie('user_id', user.id );
     res.redirect('/urls');
-  } else {
-    res.send("sorry. Username and password does not match");
+  } else if ( user === false){
+    //email and password do not match, returned false
+    if ( doesEmailExist(email) === true){
+      res.send("Sorry. Email and password does not match.");
+      console.log("Email exist, password do not match");
+      res.status(403).end();
+    } else {
+      //email do not exist
+      res.send("Sorry. Email does not exist.");
+      console.log("Email does not exist");
+      res.status(403).end();
+    }
   }
-
 })
 
 // username Logout
 app.post('/logout', (req, res) => {
   console.log('inside POST logout route');
-  res.clearCookie('username');
+  //res.clearCookie('username');
   res.clearCookie('user_id');
-  res.redirect('/urls');
+  res.redirect('/login');
 })
 
 // new user registation
