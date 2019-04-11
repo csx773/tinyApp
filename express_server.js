@@ -28,7 +28,7 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    password: "123"
   },
  "user2RandomID": {
     id: "user2RandomID",
@@ -47,18 +47,31 @@ function generateRandomString() {
 //loops through users and check if email already exist. Returns true or false
 function doesEmailExist(email){
   for ( var elm in users){
-    if ( users[elm].email === email){ return true;}
+    if ( users[elm].email === email){
+      return true;
+    }
   }
   //email do NOT exist
   return false;
 }
+
+//compares the email and password to database
+function authenticateUser(email, password){
+  for(var key in users){
+    if(users[key].email=== email && users[key].password===password){
+      return users[key];
+    }
+  }
+  return false;
+}
+
 
 //event Handler for differnt routes *****************************
 
 //homepage
 app.get("/", (req, res) => {
   //res.send("Hello there General Kenobi!");
-  res.redirect('/urls');
+  res.redirect('/login');
 });
 //display database JSON
 app.get("/urls.json", (req, res) => {
@@ -168,12 +181,26 @@ app.post('/urls/:id/update', (req, res) => {
   res.redirect('/urls');
 });
 
-// username (simple login)
+// (Default) Login page
+
+
+
 app.post('/login', (req, res) => {
   console.log('inside POST login route');
-  let newName = req.body.username;
-  res.cookie('username', newName);
-  res.redirect('/urls');
+  // let tempID = req.cookies['user_id'];
+  let email = req.body.email;
+  let password = req.body.password;
+  console.log(`entered email is: ${email} and password: ${password}`);
+
+  var user = authenticateUser(email, password);
+  if(user){
+    // res.send("Username and password matched");
+    res.cookie('user_id', user.id );  // user_id
+    res.redirect('/urls');
+  } else {
+    res.send("sorry. Username and password does not match");
+  }
+
 })
 
 // username Logout
