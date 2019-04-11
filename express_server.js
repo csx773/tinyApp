@@ -87,6 +87,18 @@ app.get("/register", (req, res) => {
   res.render("new-registration", templateVars);
 });
 
+//Login page
+app.get("/login", (req, res) => {
+  console.log('inside login page')
+  let templateVars = {
+                      username: req.cookies["username"],
+                      user_id:  req.cookies["user_id"],
+                      user: users[req.cookies["user_id"]]
+   };
+  res.render("login", templateVars);
+});
+
+
 // displays all urls
 app.get("/urls", (req, res) => {
   let templateVars = {  urls: urlDatabase,
