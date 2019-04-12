@@ -154,7 +154,12 @@ app.get("/register", (req, res) => {
                       user_id:  req.session.user_id,
                       user: users[req.session.user_id]
    };
-  res.render("new-registration", templateVars);
+  if (templateVars.user_id){
+    //user is logged in
+    res.redirect('/urls');
+  } else {
+    res.render("new-registration", templateVars);
+  }
 });
 
 //Login page
@@ -182,7 +187,7 @@ app.get("/urls", (req, res) => {
                           user_id:  req.session.user_id,
                           user: users[req.session.user_id]
                           };
-      console.log(`New user registration, tempplateVars: ${templateVars}`);
+      console.log(`New user registration, templateVars: ${templateVars}`);
       res.render("urls_index", templateVars);
     } else {
       //user already registered, show associated links
@@ -270,6 +275,7 @@ app.get("/u/:shortURL", (req, res) => {
 // event Handler for all POST methods ***********************************
 
 //event Handler for POST from browser, redirected from /urls/new
+// same as /urls:id
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   let templongURL = req.body.longURL;
