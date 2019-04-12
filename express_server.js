@@ -334,9 +334,9 @@ app.post('/login', (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
   console.log(`entered email is: ${email} and password: ${password}`);
-  //bcrypt.compareSync("purple-monkey-dinosaur", hashedPassword); // returns true
   var user = authenticateUser(email, password);
   if(user){
+    //email and password match, valid login
     req.session.user_id = user.id;
     res.redirect('/urls');
   } else if ( user === false){
