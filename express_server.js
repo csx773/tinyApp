@@ -274,13 +274,17 @@ app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   let templongURL = req.body.longURL;
   let tempuserID = req.session.user_id;
-  urlDatabase[shortURL] = { longURL: templongURL,
-                            userID: tempuserID
+  if (tempuserID){
+    //user is logged in
+    urlDatabase[shortURL] = { longURL: templongURL,
+                              userID: tempuserID
+    }
+    console.log('urlDatabase is now: ', urlDatabase);
+    res.redirect('/urls');
+  } else {
+    //user not logged in
+    res.send('Please log in/ register first')
   }
-   //need to store new urls correctly ( longURL and userID)
-  //urlDatabase[shortURL.userID] = tempuserID;
-  console.log('urlDatabase is now: ', urlDatabase);
-  res.redirect('/urls');
 });
 
 // delete URL method
