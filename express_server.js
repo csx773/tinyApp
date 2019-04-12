@@ -14,9 +14,6 @@ app.set("view engine", "ejs");
 const morgan = require('morgan')
 app.use(morgan('dev'))
 
-//init cookie module in express
-// var cookieParser = require('cookie-parser')
-// app.use(cookieParser())
 
 //init NEW cookie-session
 var cookieSession = require('cookie-session');
@@ -26,11 +23,7 @@ app.use(cookieSession({
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
-// To set a cookie
-// req.session.user_id = 'some value';
 
-// To read a cookie
-// req.session.user_id
 
 
 //init bcrypt password module
@@ -105,6 +98,17 @@ function doesEmailExist(email){
     }
   }
   //email do NOT exist
+  return false;
+}
+
+//checks if given shortURL exist in database
+function doesLinkExist (link){
+  for ( var key in urlDatabase){
+    if ( key === link ){
+      return true;
+    }
+  }
+  //link do NOT exist
   return false;
 }
 
@@ -223,13 +227,26 @@ app.get("/urls/new", (req, res) => {
 
 //display single url
 app.get("/urls/:shortURL", (req, res) => {
+
+  if ( !doesLinkExist(req.params.shortURL)){
+    res.send("Link do not exist");
+  }
+
   let templateVars = {  shortURL: req.params.shortURL,
                         longURL: urlDatabase[req.params.shortURL].longURL,
                         user_id:  req.session.user_id,
                         user: users[req.session.user_id]
                       };
+
   if ( templateVars.user_id ){
-    res.render("urls_show", templateVars);
+    //need to check if link associated with user_id
+    if ( templateVars.user_id === urlDatabase[req.params.shortURL].userID ){
+      //user owns this link
+      res.render("urls_show", templateVars);
+    } else {
+      //user logged in but dont own link
+      res.send('You do not have access to this link');
+    }
   } else {
     // user is not logged in
     //res.send("Please log in to edit links");
@@ -240,8 +257,13 @@ app.get("/urls/:shortURL", (req, res) => {
 //GET handler for after new shortURL created, redirects to acutal longURL page
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL].longURL;
-  res.redirect(longURL);
+  let result  = doesLinkExist(shortURL);
+  if (result === true){
+    const longURL = urlDatabase[shortURL].longURL;
+    res.redirect(longURL);
+  } else {
+    res.send('Error! Link do not exist');
+  }
 });
 
 
