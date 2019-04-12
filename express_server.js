@@ -206,7 +206,7 @@ app.get("/urls/:shortURL", (req, res) => {
 //GET handler for after new shortURL created, redirects to acutal longURL page
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
+  const longURL = urlDatabase[shortURL].longURL;
   res.redirect(longURL);
 });
 
