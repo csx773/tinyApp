@@ -22,22 +22,25 @@
           <a> Click to add new link </a>
           <button type="submit" class="btn btn-primary"> Add Link </button>
         </form>
+        <% if (urls.sample) { %>
+            <p> Please add a new link </p>
+        <% } else { %>
 
-      <ul>
+            <ul>
+                <% for ( let elm in urls) {%>
+                      <li> <a href="#"> <%= elm %> </a> is for website: <%= urls[elm] %>
 
-          <% for ( let elm in urls) {%>
-                <li> <a href="#"> <%= elm %> </a> is for website: <%= urls[elm] %>
+                        <form class="form-inline" method="GET" action='/urls/<%= elm %>/'>
+                          <button type='submit'> Edit </button>
+                        </form>
 
-                  <form class="form-inline" method="GET" action='/urls/<%= elm %>/'>
-                    <button type='submit'> Edit </button>
-                  </form>
-
-                  <form class="form-inline" method="POST" action='/urls/<%= elm %>/delete'>
-                    <button type='submit'> Delete </button>
-                  </form>
-                </li>
-          <% }; %>
-      </ul>
+                        <form class="form-inline" method="POST" action='/urls/<%= elm %>/delete'>
+                          <button type='submit'> Delete </button>
+                        </form>
+                      </li>
+                <% }; %>
+            </ul>
+        <% }; %>
       <% }; %>
 </body>
 

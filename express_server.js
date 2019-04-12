@@ -18,6 +18,9 @@ app.use(morgan('dev'))
 var cookieParser = require('cookie-parser')
 app.use(cookieParser())
 
+//init bcrypt password module
+const bcrypt = require('bcrypt');
+
 // Database for app
 var urlDatabase = {
   "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "userRandomID"  },
@@ -149,16 +152,28 @@ app.get("/urls", (req, res) => {
     //user is logged in
     let urlKeys = urlsForUser(tempID);
     console.log(`Returned urlsList: ${urlKeys}`);
-    let subDatabase = singleUserDatabase(urlKeys);
-    console.log(`Returned singleUserDatabase is: ${subDatabase}`);
-
-    let templateVars = {  urls: subDatabase,
+    if ( urlKeys === false){
+      //new user registration, no links to display, give 1 sample URL
+      let templateVars = {
+                          urls: { sample: "http://www.example.com"},
                           user_id:  req.cookies["user_id"],
-                          user: users[req.cookies["user_id"]],
-                          urlKeys: urlKeys
-                       };
-    console.log(templateVars);
-    res.render("urls_index", templateVars);
+                          user: users[req.cookies["user_id"]]
+                          };
+      console.log(`New user registration, tempplateVars: ${templateVars}`);
+      res.render("urls_index", templateVars);
+    } else {
+      //user already registered, show associated links
+      let subDatabase = singleUserDatabase(urlKeys);
+      console.log(`Returned singleUserDatabase is: ${subDatabase}`);
+
+      let templateVars = {  urls: subDatabase,
+                            user_id:  req.cookies["user_id"],
+                            user: users[req.cookies["user_id"]],
+                            urlKeys: urlKeys
+                         };
+      console.log(templateVars);
+      res.render("urls_index", templateVars);
+    }
   } else {
     //user is NOT logged in
     console.log('User is NOT logged in');
@@ -298,10 +313,11 @@ app.post('/logout', (req, res) => {
 // new user registation
 app.post("/register", (req, res) => {
   let randomID = generateRandomString();
+  let hashedPassword = bcrypt.hashSync(req.body.password, 10);
   let newUser = {
                   id: randomID,
                   email: req.body.email,
-                  password: req.body.password
+                  password: hashedPassword
   }
   //if email and password are empty
   if (!(newUser.email && newUser.password)){
@@ -322,6 +338,10 @@ app.post("/register", (req, res) => {
   }
 
 });
+/////////////exmpale hashed password
+//const password = "purple-monkey-dinosaur"; // found in the req.params object
+//const hashedPassword = bcrypt.hashSync(password, 10);
+
 
 //start the server to listen to requests ******************************8
 app.listen(PORT,'0.0.0.0', () => {
