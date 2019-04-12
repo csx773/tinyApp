@@ -20,8 +20,9 @@ app.use(cookieParser())
 
 // Database for app
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "userRandomID"  },
+  "9sm5xK": { longURL: "http://www.google.com", userID: "userRandomID"  },
+  "578g6c": { longURL: "http://www.example.com", userID: "user2RandomID"  }
 };
 
 const users = {
@@ -33,8 +34,40 @@ const users = {
  "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: "456"
   }
+}
+
+// checks all URLS registered to enter userID, id must be entered as string
+function urlsForUser(id){
+  console.log("Inside urlsForUser function");
+  let userURLS = [];
+  for (var link in urlDatabase){
+    if ( urlDatabase[link]['userID'] === id ){
+      userURLS.push(link);
+    }
+  }
+  console.log(`All shortLinks for user are: ${userURLS}`);
+  if ( userURLS.length === 0){
+    return false;
+  } else {
+    return userURLS;
+  }
+}
+
+// returns a subset of the single User URLS, key is an array
+function singleUserDatabase ( key ){
+  let subDatabase = {};
+  if (key === undefined){
+    return false;
+  }
+  // for ( var i of key){
+  //   subDatabase[i] = urlDatabase[i]['longURL'];
+  // }
+  key.forEach(function (index){
+    subDatabase[index] = urlDatabase[index]['longURL'];
+  });
+  return subDatabase;
 }
 
 //genreate unique URL, returns a sting of 6 characters
@@ -111,12 +144,32 @@ app.get("/login", (req, res) => {
 
 // displays all urls
 app.get("/urls", (req, res) => {
-  let templateVars = {  urls: urlDatabase,
-                        user_id:  req.cookies["user_id"],
-                        user: users[req.cookies["user_id"]]
-                     };
-  console.log(templateVars);
-  res.render("urls_index", templateVars);
+  let tempID = req.cookies["user_id"];
+  if (tempID !== undefined){
+    //user is logged in
+    let urlKeys = urlsForUser(tempID);
+    console.log(`Returned urlsList: ${urlKeys}`);
+    let subDatabase = singleUserDatabase(urlKeys);
+    console.log(`Returned singleUserDatabase is: ${subDatabase}`);
+
+    let templateVars = {  urls: subDatabase,
+                          user_id:  req.cookies["user_id"],
+                          user: users[req.cookies["user_id"]],
+                          urlKeys: urlKeys
+                       };
+    console.log(templateVars);
+    res.render("urls_index", templateVars);
+  } else {
+    //user is NOT logged in
+    console.log('User is NOT logged in');
+    //res.send("User is not logged in, please login/register");
+    let templateVars = {
+                          user_id:  req.cookies["user_id"],
+                          user: users[req.cookies["user_id"]],
+                       };
+    res.render("urls_index", templateVars);
+  }
+
 });
 
 //handdle GET for new tiny URL, create new URL
@@ -125,17 +178,29 @@ app.get("/urls/new", (req, res) => {
                       user_id:  req.cookies["user_id"],
                       user: users[req.cookies["user_id"]]
    };
-  res.render("urls_new", templateVars);
+   if (templateVars.user_id){
+    //user is valid and logged in
+    res.render("urls_new", templateVars);
+   } else {
+    //user is not logged in
+    res.redirect('/login');
+   }
 });
 
 //display single url
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL,
-                        longURL: urlDatabase,
+  let templateVars = {  shortURL: req.params.shortURL,
+                        longURL: urlDatabase[req.params.shortURL].longURL,
                         user_id:  req.cookies["user_id"],
                         user: users[req.cookies["user_id"]]
                       };
-  res.render("urls_show", templateVars);
+  if ( templateVars.user_id ){
+    res.render("urls_show", templateVars);
+  } else {
+    // user is not logged in
+    //res.send("Please log in to edit links");
+    res.render("urls_show", templateVars);
+  }
 });
 
 //GET handler for after new shortURL created, redirects to acutal longURL page
@@ -145,13 +210,19 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+
 // event Handler for all POST methods ***********************************
 
-//event Handler for POST from browser
+//event Handler for POST from browser, redirected from /urls/new
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
-  let longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL;
+  let templongURL = req.body.longURL;
+  let tempuserID = req.cookies["user_id"];
+  urlDatabase[shortURL] = { longURL: templongURL,
+                            userID: tempuserID
+  }
+   //need to store new urls correctly ( longURL and userID)
+  //urlDatabase[shortURL.userID] = tempuserID;
   console.log('urlDatabase is now: ', urlDatabase);
   res.redirect('/urls');
 });
@@ -160,32 +231,46 @@ app.post("/urls", (req, res) => {
 app.post('/urls/:shortURL/delete', (req, res) => {
   console.log("inside POST delete route");
   let shortURL = req.params.shortURL;
-  //console.log(`shortURL is: ${shortURL}`);
-  delete urlDatabase[shortURL];
-  console.log(urlDatabase);
-  res.redirect('/urls');
+  let tempUserID = req.cookies["user_id"];
+  //console.log(`shortURL is: ${shortURL},  userID is: ${tempUserID}`);
+  // need to find if shortURL is associated with that user
+  console.log(`targeted userID is: ${urlDatabase[shortURL].userID}`);
+  if ( urlDatabase[shortURL].userID === tempUserID){
+    //console.log('POST delete route: user IS associated with link');
+    delete urlDatabase[shortURL];
+    console.log(urlDatabase);
+    res.redirect('/urls');
+  } else {
+    console.log('POST Delete route: User NOT associated with link!');
+    res.send('Must be logged in to delete data');
+  }
 });
 
-//update URL method
+//update(edit) URL method
 app.post('/urls/:id/update', (req, res) => {
   console.log('inside POST update route');
-  let id = req.params.id;
+  let shortURL = req.params.id;
   let longURL = req.body.longURL;
-  urlDatabase[id] = longURL;
-  res.redirect('/urls');
+  let tempUserID = req.cookies["user_id"];
+  //console.log(`shortURL is: ${shortURL},  userID is: ${tempUserID}`);
+  if ( urlDatabase[shortURL].userID === tempUserID){
+    urlDatabase[shortURL]['longURL'] = longURL;
+    res.redirect('/urls');
+  } else {
+    console.log('POST Update route: User NOT associated with link!');
+    res.send('Must be logged in to update link');
+  }
 });
 
 // (Default) Login page
 app.post('/login', (req, res) => {
   console.log('inside POST login route');
-  // let tempID = req.cookies['user_id'];
   let email = req.body.email;
   let password = req.body.password;
   console.log(`entered email is: ${email} and password: ${password}`);
 
   var user = authenticateUser(email, password);
   if(user){
-    // res.send("Username and password matched");
     res.cookie('user_id', user.id );
     res.redirect('/urls');
   } else if ( user === false){
@@ -203,12 +288,11 @@ app.post('/login', (req, res) => {
   }
 })
 
-// username Logout
+//  Logout method
 app.post('/logout', (req, res) => {
   console.log('inside POST logout route');
-  //res.clearCookie('username');
   res.clearCookie('user_id');
-  res.redirect('/login');
+  res.redirect('/urls');
 })
 
 // new user registation
@@ -240,6 +324,6 @@ app.post("/register", (req, res) => {
 });
 
 //start the server to listen to requests ******************************8
-app.listen(PORT, () => {
+app.listen(PORT,'0.0.0.0', () => {
   console.log(`TinyURL App listening on port ${PORT}!`);
 });

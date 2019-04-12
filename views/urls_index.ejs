@@ -17,14 +17,15 @@
 <body style="font-size:20px; padding:50px;">
     <!-- Add EJS code here -->
     <h2>Short URLs</h2>
+      <% if (user_id){ %>
         <form class="form-inline" method="GET" action='/urls/new'>
           <a> Click to add new link </a>
           <button type="submit" class="btn btn-primary"> Add Link </button>
         </form>
 
       <ul>
-          <% for ( let elm in urls) {%>
 
+          <% for ( let elm in urls) {%>
                 <li> <a href="#"> <%= elm %> </a> is for website: <%= urls[elm] %>
 
                   <form class="form-inline" method="GET" action='/urls/<%= elm %>/'>
@@ -37,6 +38,7 @@
                 </li>
           <% }; %>
       </ul>
+      <% }; %>
 </body>
 
 </html>

@@ -19,8 +19,8 @@
     <h2>Show Single URL</h2>
 
       <ul>
-          <% if (shortURL === longURL[shortURL])  %>
-              <li> <a href="#"> <%= shortURL %> </a> is for website: <%= longURL[shortURL] %> </li>
+            <% if (user_id) { %>
+              <li> <a href="#"> <%= shortURL %> </a> is for website: <%= longURL %> </li>
               <li>
                 <form class="form-inline" action="/urls/<%= shortURL %>/update" method="POST">
                   <label for="longURL">Enter NEW URL:</label>
@@ -28,7 +28,7 @@
                   <button type="submit" class="btn btn-primary">Update</button>
                 </form>
               </li>
-
+            <% } %>
       </ul>
 </body>
 
