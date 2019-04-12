@@ -15,8 +15,8 @@ const morgan = require('morgan')
 app.use(morgan('dev'))
 
 //init cookie module in express
-var cookieParser = require('cookie-parser')
-app.use(cookieParser())
+// var cookieParser = require('cookie-parser')
+// app.use(cookieParser())
 
 //init NEW cookie-session
 var cookieSession = require('cookie-session');
@@ -26,6 +26,12 @@ app.use(cookieSession({
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
+// To set a cookie
+// req.session.user_id = 'some value';
+
+// To read a cookie
+// req.session.user_id
+
 
 //init bcrypt password module
 const bcrypt = require('bcrypt');
@@ -131,8 +137,8 @@ app.get("/hello", (req, res) => {
   //access in variable in .ejs file by KEY name!!!
   let templateVars = {
                         greeting: 'Hello World! This is my Lil App!',
-                        user_id:  req.cookies["user_id"],
-                        user: users[req.cookies["user_id"]]
+                        user_id:  req.session.user_id,
+                        user: users[req.session.user_id]
                      };
   res.render("hello_world", templateVars);
 });
@@ -141,8 +147,8 @@ app.get("/hello", (req, res) => {
 app.get("/register", (req, res) => {
   console.log('inside register page')
   let templateVars = {
-                      user_id:  req.cookies["user_id"],
-                      user: users[req.cookies["user_id"]]
+                      user_id:  req.session.user_id,
+                      user: users[req.session.user_id]
    };
   res.render("new-registration", templateVars);
 });
@@ -151,8 +157,8 @@ app.get("/register", (req, res) => {
 app.get("/login", (req, res) => {
   console.log('inside login page')
   let templateVars = {
-                      user_id:  req.cookies["user_id"],
-                      user: users[req.cookies["user_id"]]
+                      user_id:  req.session.user_id,
+                      user: users[req.session.user_id]
    };
   res.render("login", templateVars);
 });
@@ -160,7 +166,7 @@ app.get("/login", (req, res) => {
 
 // displays all urls
 app.get("/urls", (req, res) => {
-  let tempID = req.cookies["user_id"];
+  let tempID = req.session.user_id;
   if (tempID !== undefined){
     //user is logged in
     let urlKeys = urlsForUser(tempID);
@@ -169,8 +175,8 @@ app.get("/urls", (req, res) => {
       //new user registration, no links to display, give 1 sample URL
       let templateVars = {
                           urls: { sample: "http://www.example.com"},
-                          user_id:  req.cookies["user_id"],
-                          user: users[req.cookies["user_id"]]
+                          user_id:  req.session.user_id,
+                          user: users[req.session.user_id]
                           };
       console.log(`New user registration, tempplateVars: ${templateVars}`);
       res.render("urls_index", templateVars);
@@ -180,8 +186,8 @@ app.get("/urls", (req, res) => {
       console.log(`Returned singleUserDatabase is: ${subDatabase}`);
 
       let templateVars = {  urls: subDatabase,
-                            user_id:  req.cookies["user_id"],
-                            user: users[req.cookies["user_id"]],
+                            user_id:  req.session.user_id,
+                            user: users[req.session.user_id],
                             urlKeys: urlKeys
                          };
       console.log(templateVars);
@@ -192,8 +198,8 @@ app.get("/urls", (req, res) => {
     console.log('User is NOT logged in');
     //res.send("User is not logged in, please login/register");
     let templateVars = {
-                          user_id:  req.cookies["user_id"],
-                          user: users[req.cookies["user_id"]],
+                          user_id:  req.session.user_id,
+                          user: users[req.session.user_id],
                        };
     res.render("urls_index", templateVars);
   }
@@ -203,8 +209,8 @@ app.get("/urls", (req, res) => {
 //handdle GET for new tiny URL, create new URL
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-                      user_id:  req.cookies["user_id"],
-                      user: users[req.cookies["user_id"]]
+                      user_id:  req.session.user_id,
+                      user: users[req.session.user_id]
    };
    if (templateVars.user_id){
     //user is valid and logged in
@@ -219,8 +225,8 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = {  shortURL: req.params.shortURL,
                         longURL: urlDatabase[req.params.shortURL].longURL,
-                        user_id:  req.cookies["user_id"],
-                        user: users[req.cookies["user_id"]]
+                        user_id:  req.session.user_id,
+                        user: users[req.session.user_id]
                       };
   if ( templateVars.user_id ){
     res.render("urls_show", templateVars);
@@ -245,7 +251,7 @@ app.get("/u/:shortURL", (req, res) => {
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   let templongURL = req.body.longURL;
-  let tempuserID = req.cookies["user_id"];
+  let tempuserID = req.session.user_id;
   urlDatabase[shortURL] = { longURL: templongURL,
                             userID: tempuserID
   }
@@ -259,7 +265,7 @@ app.post("/urls", (req, res) => {
 app.post('/urls/:shortURL/delete', (req, res) => {
   console.log("inside POST delete route");
   let shortURL = req.params.shortURL;
-  let tempUserID = req.cookies["user_id"];
+  let tempUserID = req.session.user_id;
   //console.log(`shortURL is: ${shortURL},  userID is: ${tempUserID}`);
   // need to find if shortURL is associated with that user
   console.log(`targeted userID is: ${urlDatabase[shortURL].userID}`);
@@ -279,7 +285,7 @@ app.post('/urls/:id/update', (req, res) => {
   console.log('inside POST update route');
   let shortURL = req.params.id;
   let longURL = req.body.longURL;
-  let tempUserID = req.cookies["user_id"];
+  let tempUserID = req.session.user_id;  //have to correct syntax:  remove ==>req.
   //console.log(`shortURL is: ${shortURL},  userID is: ${tempUserID}`);
   if ( urlDatabase[shortURL].userID === tempUserID){
     urlDatabase[shortURL]['longURL'] = longURL;
@@ -299,7 +305,7 @@ app.post('/login', (req, res) => {
   //bcrypt.compareSync("purple-monkey-dinosaur", hashedPassword); // returns true
   var user = authenticateUser(email, password);
   if(user){
-    res.cookie('user_id', user.id );
+    req.session.user_id = user.id;
     res.redirect('/urls');
   } else if ( user === false){
     //email and password do not match, returned false
@@ -319,7 +325,8 @@ app.post('/login', (req, res) => {
 //  Logout method
 app.post('/logout', (req, res) => {
   console.log('inside POST logout route');
-  res.clearCookie('user_id');
+  //res.clearCookie('user_id');
+  req.session = null  //destroys all cookies
   res.redirect('/urls');
 })
 
@@ -345,16 +352,12 @@ app.post("/register", (req, res) => {
   }else {
     // start new user registration
     users[randomID] = newUser;
-    res.cookie('user_id', randomID);
+    req.session.user_id = randomID;
     console.log('users Database is now: ', users);
     res.redirect('/urls');
   }
 
 });
-/////////////exmpale hashed password
-//const password = "purple-monkey-dinosaur"; // found in the req.params object
-//const hashedPassword = bcrypt.hashSync(password, 10);
-
 
 //start the server to listen to requests ******************************8
 app.listen(PORT,'0.0.0.0', () => {
