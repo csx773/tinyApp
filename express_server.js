@@ -18,6 +18,15 @@ app.use(morgan('dev'))
 var cookieParser = require('cookie-parser')
 app.use(cookieParser())
 
+//init NEW cookie-session
+var cookieSession = require('cookie-session');
+app.use(cookieSession({
+  name: 'session',
+  keys: ['gundam'],
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
+
 //init bcrypt password module
 const bcrypt = require('bcrypt');
 
