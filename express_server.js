@@ -32,14 +32,16 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "123"
+    password: bcrypt.hashSync("123", 10)
   },
  "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "456"
+    password: bcrypt.hashSync("456", 10)
   }
 }
+
+//const hashedPassword = bcrypt.hashSync(password, 10);
 
 // checks all URLS registered to enter userID, id must be entered as string
 function urlsForUser(id){
@@ -93,8 +95,10 @@ function doesEmailExist(email){
 
 //compares the email and password to database
 function authenticateUser(email, password){
+  let tempPassword = '';
   for(var key in users){
-    if(users[key].email=== email && users[key].password===password){
+    tempPassword = bcrypt.compareSync( password, users[key].password); //returns true if same
+    if(users[key].email === email && tempPassword){
       return users[key];
     }
   }
@@ -283,7 +287,7 @@ app.post('/login', (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
   console.log(`entered email is: ${email} and password: ${password}`);
-
+  //bcrypt.compareSync("purple-monkey-dinosaur", hashedPassword); // returns true
   var user = authenticateUser(email, password);
   if(user){
     res.cookie('user_id', user.id );
