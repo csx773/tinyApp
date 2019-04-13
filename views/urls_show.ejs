@@ -18,10 +18,10 @@
     <!-- Add EJS code here -->
     <h2>Show Single URL</h2>
 
-      <ul>
+      <ul class="list-group">
             <% if (user_id) { %>
-              <li> <a href="#"> <%= shortURL %> </a> is for website: <%= longURL %> </li>
-              <li>
+              <li class="list-group-item"> <a href="#"> <%= shortURL %> </a> is for website: <%= longURL %> </li>
+              <li class="list-group-item">
                 <form class="form-inline" action="/urls/<%= shortURL %>/update" method="POST">
                   <label for="longURL">Enter NEW URL:</label>
                   <input class="form-control" type="text" name="longURL" placeholder="http://" style="width: 300px; margin: 1em">

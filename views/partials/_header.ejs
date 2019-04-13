@@ -1,24 +1,23 @@
 
-<h2> TinyApp </h2>
+<h1 class="text-primary"> TinyApp </h1>
 
 <% if(user ) { %>
   <h3> Signed in as: <%= user.email %> </h3>
   <form class="form-inline" action="/logout" method="POST">
-    <button type="submit" class="btn btn-primary">Logout</button>
+    <button type="submit" class="btn btn-danger">Logout</button>
   </form>
 <% } else { %>
   <div>
     <form action="/login" method="GET">
-      <button type="submit" class="btn btn-primary">Login</button>
+      <button type="submit" class="btn btn-info m-2">Login</button>
     </form>
   </div>
   <div>
     <form action="/register" method="GET">
-      <button type="submit" class="btn btn-primary">Register</button>
+      <button type="submit" class="btn btn-info m-2">Register</button>
     </form>
   </div>
-  <p> You are not logged in. </p>
-  <p> Please login or register to use TinyApp </p>
+  <p class="badge badge-warning text-wrap" style="width: 40rem;"> Please login or register to use TinyApp </p>
 <% } %>
 
 

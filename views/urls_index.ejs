@@ -19,29 +19,32 @@
     <h2>Short URLs</h2>
       <% if (user_id){ %>
         <form class="form-inline" method="GET" action='/urls/new'>
-          <a> Click to add new link </a>
-          <button type="submit" class="btn btn-primary"> Add Link </button>
+          <a> Click to add new link: </a>
+          <button type="submit" class="btn btn-primary m-2"> Add Link </button>
         </form>
         <% if (urls.sample) { %>
-            <p> Please add a new link </p>
+            <p class="badge badge-primary text-wrap" style="width: 20rem;"> NOTE: Please add a new link </p>
         <% } else { %>
 
-            <ul>
+            <ul class="list-group">
                 <% for ( let elm in urls) {%>
-                      <li> <a href="#"> <%= elm %> </a> is for website: <%= urls[elm] %>
+                      <li class="list-group-item"> <a href="#"> <%= elm %> </a> is for website: <%= urls[elm] %>
 
                         <form class="form-inline" method="GET" action='/urls/<%= elm %>/'>
-                          <button type='submit'> Edit </button>
+                          <button type='submit' class="btn btn-secondary m-2"> Edit </button>
                         </form>
 
                         <form class="form-inline" method="POST" action='/urls/<%= elm %>/delete'>
-                          <button type='submit'> Delete </button>
+                          <button type='submit' class="btn btn-warning m-2"> Delete </button>
                         </form>
+
                       </li>
                 <% }; %>
             </ul>
         <% }; %>
       <% }; %>
 </body>
+
+
 
 </html>
