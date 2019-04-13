@@ -21,6 +21,5 @@ Some screenshots here
 ## Getting started
 
 - install all dependancies ( using: `npm install`)
-- run the webserver using `node express_server.js`
-
+- run the webserver using `npm start`
 
