@@ -5,12 +5,9 @@ Allows users to login, create tiny URLS from a web address, and use it to redire
 
 ## Final Product
 
-Some screenshots here
-!["New User Registration page"]
-(https://github.com/csx773/tinyApp/blob/master/docs/New-user-registration.png)
+!["New User Registration page"](https://github.com/csx773/tinyApp/blob/master/docs/New-user-registration.png)
 
-["New User Registration page"]
-(https://github.com/csx773/tinyApp/blob/master/docs/New-user-registration.png)
+["New User Registration page"](https://github.com/csx773/tinyApp/blob/master/docs/New-user-registration.png)
 
 ["Edit link page"](https://github.com/csx773/tinyApp/blob/master/docs/edit-link-page.png)
 
@@ -38,3 +35,9 @@ Some screenshots here
 - install all dependancies ( using: `npm install`)
 - run the webserver using `npm start`
 
+## Test accounts to use app
+Login: user@example.com
+Pass: 123
+
+Login: user2@example.com
+Pass: 456
