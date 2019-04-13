@@ -6,10 +6,11 @@ Allows users to login, create tiny URLS from a web address, and use it to redire
 ## Final Product
 
 Some screenshots here
-!['New User Registration page']
+!["New User Registration page"]
 (https://github.com/csx773/tinyApp/blob/master/docs/New-user-registration.png?raw=true)
 
-
+["New User Registration page"]
+(https://github.com/csx773/tinyApp/blob/master/docs/New-user-registration.png?raw=true)
 
 ## Dependencies
 
